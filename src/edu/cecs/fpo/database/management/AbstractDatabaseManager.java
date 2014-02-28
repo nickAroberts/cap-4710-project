@@ -3,13 +3,16 @@
  */
 package edu.cecs.fpo.database.management;
 
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.ConnectException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 import edu.cecs.fpo.common.LoggerManager;
@@ -32,18 +35,50 @@ public class AbstractDatabaseManager {
 	/** Class name used to dynamically load the JDBC driver */
 	private final static String JDBC_DRIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
 	
-	/** Host URL used to establish the server connection */
-	private final static String HOST_URL = "jdbc:mysql://localhost/";
+	/** File name used to locate and open the server configuration settings file */
+	private final static String SERVER_CONFIG_FILE_NAME = "config/server.properties";
 	
 	/** The name of the MySQL database*/
 	private final static String DATABASE_NAME = "facultypurshaseorders";
 	
+	/** Host URL used to establish the MySQL server connection */
+	private static String HOST_URL;
+	
 	/** The user name used to connect to the MySQL host */
-	private final static String USER = "root";
+	private static String USER;
 	
 	/** The password used to connect to the MySQL host */
-	private final static String PASSWORD = "cap-4710-project-spring-2014";
+	private static String PASSWORD;
 
+	static {	
+		logger.log(LoggerManager.INFO, "Getting the server configuration settings from " + SERVER_CONFIG_FILE_NAME + ".");
+		
+		Properties prop  = new Properties();
+		InputStream input = null;
+		
+		try{			
+			//get the server configuration settings from the designated file
+			input = new FileInputStream(SERVER_CONFIG_FILE_NAME);			
+			prop.load(input);
+					
+			//get the host url, user name, and password from the server configuration settings
+			HOST_URL = "jdbc:mysql://" + prop.getProperty("ipAddress") + "/";
+			USER = prop.getProperty("username");
+			PASSWORD = prop.getProperty("password");
+			
+		} catch(Exception e){
+			logger.log(LoggerManager.WARN, "An error occured while getting the server configuration in "+ SERVER_CONFIG_FILE_NAME +".", e);
+		
+		} finally {
+			if(input != null){
+				try{
+					input.close();
+				} catch(Exception e){
+					logger.log(LoggerManager.WARN, "An error occured while closing "+ SERVER_CONFIG_FILE_NAME +".", e);
+				}
+			}
+		}
+	}
 	
 	//---[METHODS]---
 	
