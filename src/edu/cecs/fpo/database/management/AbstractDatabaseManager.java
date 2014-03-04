@@ -9,9 +9,12 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.ConnectException;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -304,31 +307,69 @@ public class AbstractDatabaseManager {
 			
 			//establish the connection to the database
 			connection = establishConnection();			
-			Statement statement = connection.createStatement();
 			
-			//get the set of all entries in the USERS table
-			ResultSet result = statement.executeQuery(
-				"select * " +
-				"from USERS"
-			);			
-			
-			//print out the contents of the USERS table
-			stream.println(" ,userID,username,pass,firstName,lastName,emailAddress,role\n");
-			while(result.next()){
-				stream.println(	
-					"Row " + result.getRow() + "," +
-					result.getInt("userID") + "," +					
-					result.getString("username") + "," +
-					result.getString("pass") + "," +
-					result.getString("firstName") + "," +
-					result.getString("lastName") + "," +
-					result.getString("emailAddress") + "," +
-					result.getString("role") + "\n"
-				);
+			//get the names of all the tables in the database	
+			List<String> tableNames = new ArrayList<String>();
+			DatabaseMetaData metadata = connection.getMetaData();
+					
+			ResultSet tableSet = metadata.getTables(null, null, "%", null);
+			while (tableSet.next()) {								
+			  tableNames.add(tableSet.getString(3)); 
+			  //column 3 is designated as the table's name. See http://docs.oracle.com/javase/6/docs/api/java/sql/DatabaseMetaData.html	  
 			}
-
 			
-			statement.close();				
+			//print out the contents of each table in the database
+			Statement statement = connection.createStatement();			
+			
+			for(String tableName : tableNames){
+				logger.log(LoggerManager.INFO, "Printing contents of table: " + tableName + ".");
+				
+				stream.print(tableName + ":\n");
+				
+				//get the set of all entries in the current table
+				ResultSet entrySet = statement.executeQuery(
+					"select * " +
+					"from " + tableName
+				);			
+				
+				//print the column headers
+				logger.log(LoggerManager.INFO, "Getting headers for table: " + tableName + ".");
+				List<String> columnNames = new ArrayList<String>();
+				
+				for(int i = 1; i < entrySet.getMetaData().getColumnCount(); i++){
+					String columnName = entrySet.getMetaData().getColumnName(i);
+					
+					stream.print("," + columnName);
+					columnNames.add(columnName);
+				}
+				
+				stream.print("\n");
+				
+				//print the values of each entry
+				logger.log(LoggerManager.INFO, "Printing Entries for table: " + tableName + ".");
+				while(entrySet.next()){
+					
+					stream.print("Row: " + entrySet.getRow() + ",");
+					
+					for(String columnName : columnNames){
+						if(columnNames.indexOf(columnName) == columnNames.size()-1){
+							stream.print(entrySet.getString(columnName));
+						} else{
+							stream.print(entrySet.getString(columnName) + ",");
+						}						
+					}
+					
+					stream.print("\n");
+				}
+
+				stream.print("\n");
+				
+				logger.log(LoggerManager.INFO, "Finished printing table: " + tableName + ".");
+			}
+			
+			statement.close();		
+			
+			logger.log(LoggerManager.INFO, "Successfully printed the contents of the database!");
 			
 		} catch (Exception e) {
 			logger.log(LoggerManager.WARN, "An error occurred while printing the contents of the database.", e);
