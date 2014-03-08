@@ -229,7 +229,7 @@ public class AbstractDatabaseManager {
 	 */
 	public static boolean insertRow(AbstractTableEntry entry){
 		
-		logger.log(LoggerManager.INFO, "Inserting row into " + entry.getTableName() + " table.");
+		logger.log(LoggerManager.INFO, "Inserting row with " + entry.getPrimaryKeyName() + ": " + entry.getId() + " into " + entry.getTableName() + " table.");
 		
 		Connection connection = null;
 		
@@ -257,6 +257,8 @@ public class AbstractDatabaseManager {
 			
 			statement.close();
 			
+			logger.log(LoggerManager.INFO, "Successfully inserted row to the database!");
+			
 			return true;
 			
 		} catch(Exception e){
@@ -267,6 +269,108 @@ public class AbstractDatabaseManager {
 		}
 		
 		return false;
+	}
+	
+	/**
+	 * Deletes a row corresponding to the specified table entry from the table corresponding to that entry.
+	 * 
+	 * @param entry The table entry for which a row is being deleted
+	 * @return Whether or not the delete is successful
+	 */
+	public static boolean deleteRow(AbstractTableEntry entry){
+		
+		logger.log(LoggerManager.INFO, "Deleting row with " + entry.getPrimaryKeyName() + ": " + entry.getId() + " from " + entry.getTableName() + " table.");
+		
+		Connection connection = null;
+		
+		try{
+			connection = establishConnection();
+			Statement statement = connection.createStatement();
+			
+			StringBuilder sqlCommand = new StringBuilder();
+			
+			sqlCommand.append(
+				"delete from " + entry.getTableName() + 
+				" where " + entry.getPrimaryKeyName() + "=" + entry.getId()
+			);
+			
+			logger.log(LoggerManager.INFO, "Executing command \"" + sqlCommand.toString() + "\".");
+			
+			statement.executeUpdate(sqlCommand.toString());
+			
+			statement.close();
+			
+			logger.log(LoggerManager.INFO, "Successfully deleted row from the database!");
+			
+			return true;
+			
+		} catch(Exception e){
+			logger.log(LoggerManager.INFO, "An error occurred while deleting a row from " + entry.getTableName() + " table.", e);
+			
+		} finally{
+			terminateConnection(connection);
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Gets a table entry corresponding to a row with the specified primary key value in the table associated with the specified table entry class 
+	 * 
+	 * @param primaryKeyId The primary key value of the table entry to be returned
+	 * @param entryClass The class extending AbstractTableEntry that is associated with the table containing the table entry to be be returned
+	 * @return The table entry with the specified primary key value in the table associated with the specified table entry class 
+	 */
+	public static AbstractTableEntry selectRowByPrimaryKey(int primaryKeyId, Class<? extends AbstractTableEntry> entryClass){	
+		
+		logger.log(LoggerManager.INFO, "Selecting row with primary key " + primaryKeyId + " from the table associated with the table entry class " + entryClass.getName() + " .");
+		
+		Connection connection = null;
+		
+		try{
+			AbstractTableEntry classInstance = entryClass.newInstance();
+
+			connection = establishConnection();
+			Statement statement = connection.createStatement();
+			
+			StringBuilder sqlCommand = new StringBuilder();
+			
+			sqlCommand.append(
+				"select * " +
+				"from " + classInstance.getTableName() + 
+				" where " + classInstance.getPrimaryKeyName() + "=" + primaryKeyId
+			);
+			
+			logger.log(LoggerManager.INFO, "Executing command \"" + sqlCommand.toString() + "\".");
+			
+			ResultSet entrySet = statement.executeQuery(sqlCommand.toString());
+			
+			classInstance.populateFromResultSet(entrySet);
+			
+			statement.close();
+			
+			logger.log(LoggerManager.INFO, "Successfully deleted row from the database!");
+			
+			return classInstance;
+			
+		} catch(ExceptionInInitializerError e){
+			logger.log(LoggerManager.WARN, "An error occurred while initializing an instance of the class " + entryClass.getName() + ".", e);
+			
+		} catch(InstantiationException e){
+			logger.log(LoggerManager.WARN, "The class " + entryClass.getName() + " is missing a default, no argument constructor.", e);
+			
+		} catch(IllegalAccessException e){
+			logger.log(LoggerManager.WARN, "The default, no argument constructor of " + entryClass.getName() + " could not be accessed.", e);
+			
+		} catch(Exception e){
+			logger.log(LoggerManager.INFO, "An error occurred while selecting the entry with a primary key of " + primaryKeyId + " from"
+					+ " the table associated with the table entry class " + entryClass.getName() + " .");
+			
+		} finally{
+			terminateConnection(connection);
+		}
+		
+		return null;
 	}
 	
 	/**
@@ -378,9 +482,6 @@ public class AbstractDatabaseManager {
 			stream.close();
 			terminateConnection(connection);
 		}
-		
-		
-		
 	}
 	
 	/**
@@ -390,7 +491,25 @@ public class AbstractDatabaseManager {
 	 */
 	public static void main(String[] args){
 		try {
-			insertRow(new User(0, "A", "B", "C", "D", "E", "F"));
+			if(selectRowByPrimaryKey(1, User.class) == null){
+				insertRow(new User(1, "A", "B", "C", "D", "E", "F"));
+			}
+			
+			User u2 = new User(2, "G", "H", "I", "J", "K", "L");
+			
+			if(selectRowByPrimaryKey(2, User.class) == null){
+				insertRow(u2);
+			}			
+			
+			deleteRow(new User(2, "Only", "Primary", "Key", "ID", "Matters", "Here"));
+			
+			User u1 = (User) selectRowByPrimaryKey(1, User.class);
+			if(u1 != null){
+				System.out.print("User:" + u1.toSQLRepresentation());
+			}else{
+				System.out.print("No user with the specified ID exists in the database.");
+			}
+			
 			printDatabaseContents();
 			
 		} catch (Exception e) {

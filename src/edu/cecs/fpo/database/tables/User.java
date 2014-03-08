@@ -3,6 +3,9 @@
  */
 package edu.cecs.fpo.database.tables;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 /**
  * The table representation of users within the database.
  * 
@@ -22,6 +25,7 @@ public class User extends AbstractTableEntry{
 		"emailAddress",
 		"role"
 	};
+	private static final String PRIMARY_KEY_NAME = COLUMN_NAMES[0];
 	
 	
 	//---[INSTANCE FIELDS]---
@@ -53,6 +57,13 @@ public class User extends AbstractTableEntry{
 	//---[METHODS]---
 	
 	/**
+	 * Creates a new user with no specified information.
+	 */
+	public User(){
+		super(TABLE_NAME, COLUMN_NAMES, PRIMARY_KEY_NAME);
+	}
+	
+	/**
 	 * Creates a new user.
 	 * 
 	 * @param userId The user's ID number
@@ -64,7 +75,7 @@ public class User extends AbstractTableEntry{
 	 * @param role The user's role description
 	 */
 	public User(int userId, String username, String password, String firstName, String lastName, String emailAddress, String role){
-		super(TABLE_NAME, COLUMN_NAMES);
+		super(TABLE_NAME, COLUMN_NAMES, PRIMARY_KEY_NAME);
 		
 		this.userId = userId;
 		this.username = username;
@@ -132,6 +143,34 @@ public class User extends AbstractTableEntry{
 	}
 
 	@Override
+	public int getId() {
+		return getUserId();
+	}
+	
+	@Override
+	public void setId(int id) {
+		setUserId(id);
+	}
+	
+	@Override
+	public AbstractTableEntry populateFromResultSet(ResultSet set) throws SQLException {
+		
+		//get the first entry in the set (there shouldn't be more than one)
+		set.next();
+
+		//populate the values for this user with the values in the database
+		setUserId(set.getInt(COLUMN_NAMES[0]));
+		setUsername(set.getString(COLUMN_NAMES[1]));
+		setPassword(set.getString(COLUMN_NAMES[2]));
+		setFirstName(set.getString(COLUMN_NAMES[3]));
+		setLastName(set.getString(COLUMN_NAMES[4]));
+		setEmailAddress(set.getString(COLUMN_NAMES[5]));
+		setRole(set.getString(COLUMN_NAMES[6]));	
+		
+		return this;
+	}
+
+	@Override
 	public String toSQLRepresentation() {
 		return "(" + 
 			userId + ", " +
@@ -143,5 +182,4 @@ public class User extends AbstractTableEntry{
 			"\"" + role + "\"" +
 		")";
 	}
-
 }
