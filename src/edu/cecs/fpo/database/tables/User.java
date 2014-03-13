@@ -5,6 +5,10 @@ package edu.cecs.fpo.database.tables;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * The table representation of users within the database.
@@ -119,7 +123,7 @@ public class User extends AbstractTableEntry{
 	}
 	
 	public String getLastName(){
-		return this.firstName;
+		return this.lastName;
 	}
 	
 	public void setLastName(String lastName){
@@ -154,9 +158,6 @@ public class User extends AbstractTableEntry{
 	
 	@Override
 	public AbstractTableEntry populateFromResultSet(ResultSet set) throws SQLException {
-		
-		//get the first entry in the set (there shouldn't be more than one)
-		set.next();
 
 		//populate the values for this user with the values in the database
 		setUserId(set.getInt(COLUMN_NAMES[0]));
@@ -181,5 +182,30 @@ public class User extends AbstractTableEntry{
 			"\"" + emailAddress + "\", " +
 			"\"" + role + "\"" +
 		")";
+	}
+
+	@Override
+	public List<Object> getValues() {
+		
+		List<Object> values = new ArrayList<Object>();
+		
+		values.add(getUserId());
+		values.add(getUsername());
+		values.add(getPassword());
+		values.add(getFirstName());
+		values.add(getLastName());
+		values.add(getEmailAddress());
+		values.add(getRole());
+		
+		return Collections.unmodifiableList(values);
+	}
+
+	@Override
+	public Object getValue(int index) {
+		try{
+			return getValues().get(index);
+		} catch(IndexOutOfBoundsException e){
+			return null;
+		}
 	}
 }

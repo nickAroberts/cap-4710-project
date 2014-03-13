@@ -2,6 +2,7 @@ package edu.cecs.fpo.database.tables;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 public abstract class AbstractTableEntry {
 
@@ -34,5 +35,9 @@ public abstract class AbstractTableEntry {
 	public abstract AbstractTableEntry populateFromResultSet(ResultSet set) throws SQLException;
 	
 	public abstract String toSQLRepresentation();
+	
+	public abstract List<Object> getValues();
+	
+	public abstract Object getValue(int index);
 	
 }

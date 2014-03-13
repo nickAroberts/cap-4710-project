@@ -222,10 +222,10 @@ public class AbstractDatabaseManager {
 	}
 	
 	/**
-	 * Inserts a row corresponding to the specified table entry into the table corresponding to that entry.
+	 * Inserts or updates a row corresponding to the specified table entry into the table corresponding to that entry.
 	 * 
 	 * @param entry The table entry for which a row is being inserted
-	 * @return Whether or not the insert is successful
+	 * @return Whether or not the insert or update is successful
 	 */
 	public static boolean insertRow(AbstractTableEntry entry){
 		
@@ -239,17 +239,53 @@ public class AbstractDatabaseManager {
 			
 			StringBuilder sqlCommand = new StringBuilder();
 			
-			sqlCommand.append("insert into " + entry.getTableName() + " (");
-			for(int i = 0; i < entry.getColumnNames().length; i++){
+			if(selectRowByPrimaryKey(entry.getId(), entry.getClass()) == null){
+				//if the entry to insert does not exist in the database, create an insert statement
 				
-				if(i == entry.getColumnNames().length - 1){
-					sqlCommand.append(entry.getColumnNames()[i]);
+				sqlCommand.append(
+					"insert into " + entry.getTableName() + " ("				
+				);
 				
-				} else {
-					sqlCommand.append(entry.getColumnNames()[i] + ", ");
+				for(int i = 0; i < entry.getColumnNames().length; i++){
+					
+					if(i == entry.getColumnNames().length - 1){
+						sqlCommand.append(entry.getColumnNames()[i]);
+					
+					} else {
+						sqlCommand.append(entry.getColumnNames()[i] + ", ");
+					}
 				}
+				
+				sqlCommand.append(") values " + entry.toSQLRepresentation() + ";");
+			
+			}else{
+				//otherwise, create an update statement
+			
+				sqlCommand.append(
+					"update " + entry.getTableName() +
+					" set "
+				);
+				
+				for(int i = 0; i < entry.getColumnNames().length; i++){
+					
+					String value;
+					if(entry.getValue(i) instanceof String){
+						value = "\"" + entry.getValue(i) + "\"";
+						
+					}else{
+						value = entry.getValue(i).toString();
+					}
+					
+					if(i == entry.getColumnNames().length - 1){
+						sqlCommand.append(entry.getColumnNames()[i] + "=" + value);
+					
+					}else{
+						sqlCommand.append(entry.getColumnNames()[i] + "=" + value + ", ");
+					}
+				}
+				
+				sqlCommand.append(" where " + entry.getPrimaryKeyName() + "=" + entry.getId() + ";");
 			}
-			sqlCommand.append(") values " + entry.toSQLRepresentation() + ";");
 			
 			logger.log(LoggerManager.INFO, "Executing command \"" + sqlCommand.toString() + "\".");
 			
@@ -271,6 +307,7 @@ public class AbstractDatabaseManager {
 		return false;
 	}
 	
+
 	/**
 	 * Deletes a row corresponding to the specified table entry from the table corresponding to that entry.
 	 * 
@@ -345,14 +382,25 @@ public class AbstractDatabaseManager {
 			
 			ResultSet entrySet = statement.executeQuery(sqlCommand.toString());
 			
-			classInstance.populateFromResultSet(entrySet);
-			
-			statement.close();
-			
-			logger.log(LoggerManager.INFO, "Successfully deleted row from the database!");
-			
-			return classInstance;
-			
+			if(entrySet.next()){
+				
+				classInstance.populateFromResultSet(entrySet);
+				
+				statement.close();
+				
+				logger.log(LoggerManager.INFO, "Successfully selected row from the database!");
+				
+				return classInstance;
+				
+			}else{
+				
+				statement.close();
+				
+				logger.log(LoggerManager.INFO, "Could not find a row in the database.");
+				
+				return null;
+			}
+
 		} catch(ExceptionInInitializerError e){
 			logger.log(LoggerManager.WARN, "An error occurred while initializing an instance of the class " + entryClass.getName() + ".", e);
 			
@@ -491,15 +539,10 @@ public class AbstractDatabaseManager {
 	 */
 	public static void main(String[] args){
 		try {
-			if(selectRowByPrimaryKey(1, User.class) == null){
-				insertRow(new User(1, "A", "B", "C", "D", "E", "F"));
-			}
 			
-			User u2 = new User(2, "G", "H", "I", "J", "K", "L");
+			insertRow(new User(1, "A", "B", "C", "D", "E", "F"));
 			
-			if(selectRowByPrimaryKey(2, User.class) == null){
-				insertRow(u2);
-			}			
+			insertRow(new User(2, "G", "H", "I", "J", "K", "L"));		
 			
 			deleteRow(new User(2, "Only", "Primary", "Key", "ID", "Matters", "Here"));
 			
