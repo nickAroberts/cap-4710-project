@@ -1,0 +1,1 @@
+This folder stores data recording output information from loggers and data generating processes.
