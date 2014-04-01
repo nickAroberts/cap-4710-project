@@ -20,7 +20,6 @@ import java.util.logging.Logger;
 
 import edu.cecs.fpo.common.LoggerManager;
 import edu.cecs.fpo.database.tables.AbstractTableEntry;
-import edu.cecs.fpo.database.tables.User;
 
 /**
  * A tool used to manage database information and send queries to the database.
@@ -38,8 +37,8 @@ public class AbstractDatabaseManager {
 	/** Class name used to dynamically load the JDBC driver */
 	private final static String JDBC_DRIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
 	
-	/** File name used to locate and open the server configuration settings file */
-	private final static String SERVER_CONFIG_FILE_NAME = "config/server.properties";
+	/** File name used to locate and open the database configuration settings file */
+	private final static String DATABASE_CONFIG_FILE_NAME = "config/database/database.properties";
 	
 	/** The name of the MySQL database*/
 	private final static String DATABASE_NAME = "facultypurshaseorders";
@@ -54,14 +53,14 @@ public class AbstractDatabaseManager {
 	private static String PASSWORD;
 
 	static {	
-		logger.log(LoggerManager.INFO, "Getting the server configuration settings from " + SERVER_CONFIG_FILE_NAME + ".");
+		logger.log(LoggerManager.INFO, "Getting the database configuration settings from " + DATABASE_CONFIG_FILE_NAME + ".");
 		
 		Properties prop  = new Properties();
 		InputStream input = null;
 		
 		try{			
-			//get the server configuration settings from the designated file
-			input = new FileInputStream(SERVER_CONFIG_FILE_NAME);			
+			//get the database configuration settings from the designated file
+			input = new FileInputStream(DATABASE_CONFIG_FILE_NAME);			
 			prop.load(input);
 					
 			//get the host url, user name, and password from the server configuration settings
@@ -70,14 +69,14 @@ public class AbstractDatabaseManager {
 			PASSWORD = prop.getProperty("password");
 			
 		} catch(Exception e){
-			logger.log(LoggerManager.WARN, "An error occured while getting the server configuration in "+ SERVER_CONFIG_FILE_NAME +".", e);
+			logger.log(LoggerManager.WARN, "An error occured while getting the database configuration in "+ DATABASE_CONFIG_FILE_NAME +".", e);
 		
 		} finally {
 			if(input != null){
 				try{
 					input.close();
 				} catch(Exception e){
-					logger.log(LoggerManager.WARN, "An error occured while closing "+ SERVER_CONFIG_FILE_NAME +".", e);
+					logger.log(LoggerManager.WARN, "An error occured while closing "+ DATABASE_CONFIG_FILE_NAME +".", e);
 				}
 			}
 		}
@@ -174,6 +173,8 @@ public class AbstractDatabaseManager {
 		    
 		    statement = connection.createStatement();
 			
+		    statement.executeUpdate("set foreign_key_checks = 0;");
+		    
 		    //create USERS table
 			statement.executeUpdate(
 				"create table if not exists USERS(userID int not null auto_increment,"+ 
@@ -190,13 +191,13 @@ public class AbstractDatabaseManager {
 			//create ORDERS table
 			statement.executeUpdate(
 				"create table if not exists ORDERS(orderID int not null auto_increment," + 
-						"userId int," +
+						"userID int not null," +
 						"orderRequestDate date," +
 						"purchaseDate date," +
 						"approvalDate date," +
 						"receiveDate date," +
-						"accountNumber bigint," +
-						"urgent varchar(5),"+
+						"accountNumber varchar(50)," +
+						"urgent int," +
 						"computerPurchase varchar(50),"+
 						"vendor varchar(50),"+
 						"itemDesc varchar(250)," +
@@ -206,11 +207,14 @@ public class AbstractDatabaseManager {
 						"requestorEmail varchar(75)," +
 						"amount float," +
 						"accountCode varchar(50)," +
-						"PONumber bigint," +
+						"PONumber varchar(50)," +
 						"postOrderNotes varchar(250)," +
-						"primary key(orderID)" +
+						"primary key (orderID), " +
+						"foreign key (userID) references USERS (userID)" +
 				");"
 			);
+			
+			statement.executeUpdate("set foreign_key_checks = 1;");
 			
 			logger.log(LoggerManager.INFO, "Tables created successfully.");
 			
@@ -412,7 +416,7 @@ public class AbstractDatabaseManager {
 			
 		} catch(Exception e){
 			logger.log(LoggerManager.INFO, "An error occurred while selecting the entry with a primary key of " + primaryKeyId + " from"
-					+ " the table associated with the table entry class " + entryClass.getName() + " .");
+					+ " the table associated with the table entry class " + entryClass.getName() + " .", e);
 			
 		} finally{
 			terminateConnection(connection);
@@ -540,17 +544,31 @@ public class AbstractDatabaseManager {
 	public static void main(String[] args){
 		try {
 			
-			insertRow(new User(1, "A", "B", "C", "D", "E", "F"));
+			insertRow(new edu.cecs.fpo.database.tables.User(1, "A", "B", "C", "D", "E", "F"));
 			
-			insertRow(new User(2, "G", "H", "I", "J", "K", "L"));		
+			insertRow(new edu.cecs.fpo.database.tables.User(2, "G", "H", "I", "J", "K", "L"));		
 			
-			deleteRow(new User(2, "Only", "Primary", "Key", "ID", "Matters", "Here"));
+			deleteRow(new edu.cecs.fpo.database.tables.User(2, "Only", "Primary", "Key", "ID", "Matters", "Here"));
 			
-			User u1 = (User) selectRowByPrimaryKey(1, User.class);
+			edu.cecs.fpo.database.tables.User u1 = (edu.cecs.fpo.database.tables.User) selectRowByPrimaryKey(1, edu.cecs.fpo.database.tables.User.class);
 			if(u1 != null){
 				System.out.print("User:" + u1.toSQLRepresentation());
 			}else{
 				System.out.print("No user with the specified ID exists in the database.");
+			}
+			
+			insertRow(new edu.cecs.fpo.database.tables.Order(1, 1, new java.sql.Date(1), new java.sql.Date(2), new java.sql.Date(3), new java.sql.Date(4), "A", false, "B", "C", "D", "E", "F", "G", "H", (float) 4.0, "I", "J", "K"));
+			
+			insertRow(new edu.cecs.fpo.database.tables.Order(2, 1, new java.sql.Date(1), new java.sql.Date(2), new java.sql.Date(3), new java.sql.Date(4), "A", false, "B", "C", "D", "E", "F", "G", "H", (float) 4.0, "I", "J", "K"));
+			
+			deleteRow(new edu.cecs.fpo.database.tables.Order(2, 1, null, null, null, null, HOST_URL, false, HOST_URL, HOST_URL, HOST_URL, HOST_URL, HOST_URL, HOST_URL, HOST_URL, null, HOST_URL, HOST_URL, HOST_URL));
+			
+			edu.cecs.fpo.database.tables.Order o1 = (edu.cecs.fpo.database.tables.Order) selectRowByPrimaryKey(1, edu.cecs.fpo.database.tables.Order.class);
+			
+			if(o1 != null){
+				System.out.print("Order:" + o1.toSQLRepresentation());
+			}else{
+				System.out.print("No order with the specified ID exists in the database.");
 			}
 			
 			printDatabaseContents();

@@ -6,7 +6,6 @@
 .metadata
 bin/
 tmp/
-output/*
 *.tmp
 *.bak
 *.swp

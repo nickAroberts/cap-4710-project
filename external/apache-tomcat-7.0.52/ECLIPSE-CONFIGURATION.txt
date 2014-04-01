@@ -1,0 +1,48 @@
+To run this copy of Tomcat in Eclipse, you'll have to perform the following steps in order to configure Eclipse to use it.
+
+1. Click Window -> Show View. 
+
+2. If an option named "Servers" is shown in the list of views, click it and move on to step 13. 
+
+3. Click "Other..." and type "Servers" into the text box that says "type filter text". 
+
+4. If an option named "Servers" appears, click it, click the OK button and move on to step 13. 
+
+5. Click the Cancel button.
+
+6. Click Help -> Install New Software. 
+
+7. In the "Work with:" text box, click the drop down arrow and select the name corresponding to your version of Eclipse (for example, if you use Eclipse Kepler, you'll click "Kepler - http://download.eclipse.org/Releases/kepler"). 
+
+8. Click the check box next to "Web, XML, Java EE and OSGi Enterprise Development". 
+
+9. Click the Next button until you reach the "Review Licenses" page.
+
+10. Click on the radio button next to "I accept the terms of the license agreement".
+
+11. Click the Finish button.
+
+12. Repeat steps 1-4.
+
+13. In the "Servers" view at the bottom of the Eclipse window, click "No servers are available. Click this link to create a new server".
+
+14. Type "Tomcat v7.0 Server" into the text box that says "type filter text"
+
+15. Click "Tomcat v7.0 Server" in the selection box.
+
+16. Click the Next button
+
+17. Verify that the "Name:" text box reads "Apache Tomcat v7.0"
+
+18. Click the Browse button.
+
+19. Navigate to the directory of the Tomcat installation. This project comes with a Tomcat installation at external/apache-tomcat-7.0.52, so if you wish to use this copy, simply navigate to the project directory and click external -> apache-tomcat-7.0.52.
+
+20. Click the OK button.
+
+21. Click the Finish button. The Tomcat server's name should appear in the "Servers" view now.
+
+22. Click the run button in the "Servers" view to run the server.
+
+23. Click the stop button in the "Servers" view to stop the server when you are done.
+
