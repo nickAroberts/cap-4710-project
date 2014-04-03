@@ -633,7 +633,7 @@ public class AbstractDatabaseManager {
 	public static void main(String[] args){
 		try {
 			
-			insertRow(new edu.cecs.fpo.database.tables.User(1, "A", "B", "C", "D", "E", "F"));
+			insertRow(new edu.cecs.fpo.database.tables.User(1, "A", "B", "C", "D", "E", "F")); 
 			
 			insertRow(new edu.cecs.fpo.database.tables.User(2, "G", "H", "I", "J", "K", "L"));		
 			

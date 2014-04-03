@@ -195,7 +195,7 @@ public class User extends AbstractTableEntry{
 	}
 
 	@Override
-	public List<Object> getValues() {
+	public List<Object> getValues() { 
 		
 		List<Object> values = new ArrayList<Object>();
 		

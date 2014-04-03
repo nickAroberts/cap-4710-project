@@ -355,7 +355,7 @@ public class Order extends AbstractTableEntry {
 	}
 
 	@Override
-	public String toSQLRepresentation() {
+	public String toSQLRepresentation() { 
 		return 
 			"(" +
 				"" + orderId + ", " +
