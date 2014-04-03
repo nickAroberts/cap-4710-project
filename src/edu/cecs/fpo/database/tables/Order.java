@@ -40,6 +40,26 @@ public class Order extends AbstractTableEntry {
 		"postOrderNotes"
 	};
 	
+	public static String ORDER_ID = COLUMN_NAMES[0];
+	public static String USER_ID = COLUMN_NAMES[1];
+	public static String ORDER_REQUEST_DATE = COLUMN_NAMES[2];
+	public static String PURCHASE_DATE = COLUMN_NAMES[3];
+	public static String APPROVAL_DATE = COLUMN_NAMES[4];
+	public static String RECEIVE_DATE = COLUMN_NAMES[5];
+	public static String ACCOUNT_NUMBER = COLUMN_NAMES[6];
+	public static String URGENT = COLUMN_NAMES[7];
+	public static String COMPUTER_PURCHASE = COLUMN_NAMES[8];
+	public static String VENDOR = COLUMN_NAMES[9];
+	public static String ITEM_DESC = COLUMN_NAMES[10];
+	public static String PRE_ORDER_NOTES = COLUMN_NAMES[11];
+	public static String ATTACHMENT = COLUMN_NAMES[12];
+	public static String REQUESTOR = COLUMN_NAMES[13];
+	public static String REQUESTOR_EMAIL = COLUMN_NAMES[14];
+	public static String AMOUNT = COLUMN_NAMES[15];
+	public static String ACCOUNT = COLUMN_NAMES[16];
+	public static String PO_NUMBER = COLUMN_NAMES[17];
+	public static String POST_ORDER_NOTES = COLUMN_NAMES[18];
+	
 	private static final String PRIMARY_KEY_NAME = COLUMN_NAMES[0];
 	
 	//---[INSTANCE FIELDS]---
@@ -338,14 +358,14 @@ public class Order extends AbstractTableEntry {
 	public String toSQLRepresentation() {
 		return 
 			"(" +
-				"\"" + orderId + "\", " +
-				"\"" + userId + "\", " +
+				"" + orderId + ", " +
+				"" + userId + ", " +
 				"\"" + orderRequestDate + "\", " +
 				"\"" + purchaseDate + "\", " +
 				"\"" + approvalDate + "\", " +
 				"\"" + receiveDate + "\", " +
 				"\"" + accountNumber + "\", " +
-				"\"" + (urgent ? 1 : 0)  + "\", " +	//SQL needs a value of 0 or 1 for booleans
+				"" + (urgent ? 1 : 0)  + ", " +	//SQL needs a value of 0 or 1 for booleans
 				"\"" + computerPurchase + "\", " +
 				"\"" + vendor + "\", " +
 				"\"" + itemDesc + "\", " +
@@ -353,7 +373,7 @@ public class Order extends AbstractTableEntry {
 				"\"" + attachment + "\", " +		
 				"\"" + requestor + "\", " +
 				"\"" + requestorEmail + "\", " +
-				"\"" + amount + "\", " +
+				"" + amount + ", " +
 				"\"" + accountCode + "\", " +
 				"\"" + PONumber + "\", " +
 				"\"" + postOrderNotes + "\"" +
@@ -366,7 +386,6 @@ public class Order extends AbstractTableEntry {
 		
 		List<Object> values = new ArrayList<Object>();
 		
-		values.add(getId());
 		values.add(getOrderId());
 		values.add(getUserId());
 		values.add(getOrderRequestDate());

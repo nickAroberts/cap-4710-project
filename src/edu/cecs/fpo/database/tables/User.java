@@ -28,6 +28,17 @@ public class User extends AbstractTableEntry{
 		"emailAddress",
 		"role"
 	};
+	
+	public static String USER_ID = COLUMN_NAMES[0];
+	public static String USER_NAME = COLUMN_NAMES[1];
+	public static String PASSWORD = COLUMN_NAMES[2];
+	public static String FIRST_NAME = COLUMN_NAMES[3];
+	public static String LAST_NAME = COLUMN_NAMES[4];
+	public static String EMAIL_ADDRESS = COLUMN_NAMES[5];
+	public static String ROLE = COLUMN_NAMES[6];
+	
+	
+	
 	private static final String PRIMARY_KEY_NAME = COLUMN_NAMES[0];
 	
 	

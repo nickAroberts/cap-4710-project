@@ -10,10 +10,12 @@ import java.io.PrintStream;
 import java.net.ConnectException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -273,8 +275,11 @@ public class AbstractDatabaseManager {
 				for(int i = 0; i < entry.getColumnNames().length; i++){
 					
 					String value;
-					if(entry.getValue(i) instanceof String){
+					if(entry.getValue(i) instanceof String || entry.getValue(i) instanceof Date){
 						value = "\"" + entry.getValue(i) + "\"";
+						
+					}else if(entry.getValue(i) instanceof Boolean){
+						value = Integer.toString(((Boolean)entry.getValue(i) ? 1 : 0));	
 						
 					}else{
 						value = entry.getValue(i).toString();
@@ -425,6 +430,90 @@ public class AbstractDatabaseManager {
 		return null;
 	}
 	
+	public static List<AbstractTableEntry> selectRowsByColumns(HashMap<String, Object> columnNamesToValues, Class<? extends AbstractTableEntry> entryClass){
+		
+		logger.log(LoggerManager.INFO, "Selecting rows matching " + columnNamesToValues + " from the table associated with the table entry class " + entryClass.getName() + " .");
+		
+		Connection connection = null;
+		
+		try{
+			AbstractTableEntry classInstance = entryClass.newInstance();
+
+			connection = establishConnection();
+			Statement statement = connection.createStatement();
+			
+			StringBuilder sqlCommand = new StringBuilder();
+			
+			sqlCommand.append(
+				"select * " +
+				"from " + classInstance.getTableName() + 
+				" where ("
+			);
+			
+			boolean first = true;
+			for(String key : columnNamesToValues.keySet()){
+				
+				//enclose strings in quotes before querying
+				if(columnNamesToValues.get(key) instanceof String || columnNamesToValues.get(key) instanceof Date){
+					columnNamesToValues.put(key, "\"" +  columnNamesToValues.get(key) + "\"");
+				}
+				
+				//convert booleans to 1's and 0's before querying
+				else if(columnNamesToValues.get(key) instanceof Boolean){
+					columnNamesToValues.put(key, (boolean) columnNamesToValues.get(key) ? 1 : 0);
+				}
+				
+				if(first){
+					sqlCommand.append(key + "=" + columnNamesToValues.get(key));
+					first = false;
+					
+				}else{
+					sqlCommand.append(" AND " + key + "=" + columnNamesToValues.get(key));
+				}
+			}
+			
+			sqlCommand.append(")");
+			
+			logger.log(LoggerManager.INFO, "Executing command \"" + sqlCommand.toString() + "\".");
+			
+			ResultSet entrySet = statement.executeQuery(sqlCommand.toString());
+			
+			List<AbstractTableEntry> returnList = new ArrayList<AbstractTableEntry>();
+			
+			while(entrySet.next()){
+				
+				AbstractTableEntry returnListEntry = entryClass.newInstance();				
+				returnListEntry.populateFromResultSet(entrySet);
+				
+				returnList.add(returnListEntry);
+			}
+				
+			statement.close();
+			
+			logger.log(LoggerManager.INFO, "Returning selected rows from the database.");
+			
+			return returnList;
+
+		} catch(ExceptionInInitializerError e){
+			logger.log(LoggerManager.WARN, "An error occurred while initializing an instance of the class " + entryClass.getName() + ".", e);
+			
+		} catch(InstantiationException e){
+			logger.log(LoggerManager.WARN, "The class " + entryClass.getName() + " is missing a default, no argument constructor.", e);
+			
+		} catch(IllegalAccessException e){
+			logger.log(LoggerManager.WARN, "The default, no argument constructor of " + entryClass.getName() + " could not be accessed.", e);
+			
+		} catch(Exception e){
+			logger.log(LoggerManager.INFO, "An error occurred while selecting rows matching " + columnNamesToValues + " from"
+					+ " the table associated with the table entry class " + entryClass.getName() + " .", e);
+			
+		} finally{
+			terminateConnection(connection);
+		}
+		
+		return null;
+	}
+	
 	/**
 	 * Terminates the specified connection and frees the JDBC resources associated with it.
 	 * 
@@ -552,9 +641,9 @@ public class AbstractDatabaseManager {
 			
 			edu.cecs.fpo.database.tables.User u1 = (edu.cecs.fpo.database.tables.User) selectRowByPrimaryKey(1, edu.cecs.fpo.database.tables.User.class);
 			if(u1 != null){
-				System.out.print("User:" + u1.toSQLRepresentation());
+				System.out.println("\nUser:" + u1.toSQLRepresentation());
 			}else{
-				System.out.print("No user with the specified ID exists in the database.");
+				System.out.println("\nNo user with the specified ID exists in the database.");
 			}
 			
 			insertRow(new edu.cecs.fpo.database.tables.Order(1, 1, new java.sql.Date(1), new java.sql.Date(2), new java.sql.Date(3), new java.sql.Date(4), "A", false, "B", "C", "D", "E", "F", "G", "H", (float) 4.0, "I", "J", "K"));
@@ -566,9 +655,33 @@ public class AbstractDatabaseManager {
 			edu.cecs.fpo.database.tables.Order o1 = (edu.cecs.fpo.database.tables.Order) selectRowByPrimaryKey(1, edu.cecs.fpo.database.tables.Order.class);
 			
 			if(o1 != null){
-				System.out.print("Order:" + o1.toSQLRepresentation());
+				System.out.println("\nOrder:" + o1.toSQLRepresentation());
 			}else{
-				System.out.print("No order with the specified ID exists in the database.");
+				System.out.println("\nNo order with the specified ID exists in the database.");
+			}
+			
+			HashMap<String, Object> columnNamesToValues = new HashMap<String, Object>();
+			columnNamesToValues.put(edu.cecs.fpo.database.tables.User.USER_NAME, "A");
+			columnNamesToValues.put(edu.cecs.fpo.database.tables.User.PASSWORD, "B");
+			
+			List<AbstractTableEntry> entries = selectRowsByColumns(columnNamesToValues, edu.cecs.fpo.database.tables.User.class);
+			if(entries != null){
+				System.out.println("\nEntries matching " + columnNamesToValues+ ":");
+				for(AbstractTableEntry entry : entries){
+					System.out.println(entry.toSQLRepresentation());
+				}
+			}
+			
+			HashMap<String, Object> columnNamesToValues2 = new HashMap<String, Object>();
+			columnNamesToValues2.put(edu.cecs.fpo.database.tables.Order.ORDER_REQUEST_DATE, "A");
+			columnNamesToValues2.put(edu.cecs.fpo.database.tables.Order.REQUESTOR, new java.sql.Date(1));
+			
+			List<AbstractTableEntry> entries2 = selectRowsByColumns(columnNamesToValues2, edu.cecs.fpo.database.tables.Order.class);
+			if(entries != null){
+				System.out.println("\nEntries matching " + columnNamesToValues2+ ":");
+				for(AbstractTableEntry entry : entries2){
+					System.out.println(entry.toSQLRepresentation());
+				}
 			}
 			
 			printDatabaseContents();
