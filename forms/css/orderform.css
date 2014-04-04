@@ -1,0 +1,27 @@
+
+fieldset
+{
+   width: 600px;
+   padding:60px;
+   border:5px inset gold;
+	border-radius: 10px;   
+	margin-left:auto;
+	margin-right:auto;
+}
+
+legend 
+{
+   font-family : Arial, serif;
+   font-size: 1.9em;
+   font-weight:bold;
+   color:black;
+}
+
+label
+{
+   font-family : Arial, sans-serif;
+   font-size:0.8em;
+   font-weight: bold;
+   margin-left:auto;
+	margin-right:auto;
+}
