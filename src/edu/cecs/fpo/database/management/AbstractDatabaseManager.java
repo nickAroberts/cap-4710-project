@@ -186,6 +186,7 @@ public class AbstractDatabaseManager {
 						"lastName varchar(50)," +
 						"emailAddress varchar(75)," +
 						"role varchar (25)," +
+						"unique (username)," +
 						"primary key (userID)" +
 				");"
 			);

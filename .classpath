@@ -28,5 +28,11 @@
 	<classpathentry kind="lib" path="external/apache-tomcat-7.0.52/lib/tomcat-util.jar"/>
 	<classpathentry kind="lib" path="external/apache-tomcat-7.0.52/lib/tomcat7-websocket.jar"/>
 	<classpathentry kind="lib" path="external/apache-tomcat-7.0.52/lib/websocket-api.jar"/>
+	<classpathentry kind="lib" path="external/javamail-1.4.7/lib/dsn.jar"/>
+	<classpathentry kind="lib" path="external/javamail-1.4.7/lib/gimap.jar"/>
+	<classpathentry kind="lib" path="external/javamail-1.4.7/lib/imap.jar"/>
+	<classpathentry kind="lib" path="external/javamail-1.4.7/lib/mailapi.jar"/>
+	<classpathentry kind="lib" path="external/javamail-1.4.7/lib/pop3.jar"/>
+	<classpathentry kind="lib" path="external/javamail-1.4.7/lib/smtp.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
