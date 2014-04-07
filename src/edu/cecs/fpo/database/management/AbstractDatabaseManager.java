@@ -201,7 +201,7 @@ public class AbstractDatabaseManager {
 						"receiveDate date," +
 						"accountNumber varchar(50)," +
 						"urgent int," +
-						"computerPurchase varchar(50),"+
+						"computerPurchase int,"+
 						"vendor varchar(50),"+
 						"itemDesc varchar(250)," +
 						"preOrderNotes varchar(250)," +
@@ -647,11 +647,11 @@ public class AbstractDatabaseManager {
 				System.out.println("\nNo user with the specified ID exists in the database.");
 			}
 			
-			insertRow(new edu.cecs.fpo.database.tables.Order(1, 1, new java.sql.Date(1), new java.sql.Date(2), new java.sql.Date(3), new java.sql.Date(4), "A", false, "B", "C", "D", "E", "F", "G", "H", (float) 4.0, "I", "J", "K"));
+			insertRow(new edu.cecs.fpo.database.tables.Order(1, 1, new java.sql.Date(1), new java.sql.Date(2), new java.sql.Date(3), new java.sql.Date(4), "A", false, true, "C", "D", "E", "F", "G", "H", (float) 4.0, "I", "J", "K"));
 			
-			insertRow(new edu.cecs.fpo.database.tables.Order(2, 1, new java.sql.Date(1), new java.sql.Date(2), new java.sql.Date(3), new java.sql.Date(4), "A", false, "B", "C", "D", "E", "F", "G", "H", (float) 4.0, "I", "J", "K"));
+			insertRow(new edu.cecs.fpo.database.tables.Order(2, 1, new java.sql.Date(1), new java.sql.Date(2), new java.sql.Date(3), new java.sql.Date(4), "A", false, true, "C", "D", "E", "F", "G", "H", (float) 4.0, "I", "J", "K"));
 			
-			deleteRow(new edu.cecs.fpo.database.tables.Order(2, 1, null, null, null, null, HOST_URL, false, HOST_URL, HOST_URL, HOST_URL, HOST_URL, HOST_URL, HOST_URL, HOST_URL, null, HOST_URL, HOST_URL, HOST_URL));
+			deleteRow(new edu.cecs.fpo.database.tables.Order(2, 1, null, null, null, null, HOST_URL, false, true, HOST_URL, HOST_URL, HOST_URL, HOST_URL, HOST_URL, HOST_URL, null, HOST_URL, HOST_URL, HOST_URL));
 			
 			edu.cecs.fpo.database.tables.Order o1 = (edu.cecs.fpo.database.tables.Order) selectRowByPrimaryKey(1, edu.cecs.fpo.database.tables.Order.class);
 			

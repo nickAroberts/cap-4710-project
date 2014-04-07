@@ -83,7 +83,7 @@ public class Order extends AbstractTableEntry {
 	
 	private boolean urgent;
 	
-	private String computerPurchase;
+	private boolean computerPurchase;
 	
 	private String vendor;
 	
@@ -129,7 +129,7 @@ public class Order extends AbstractTableEntry {
 			Date receiveDate,
 			String accountNumber,
 			boolean urgent,
-			String computerPurchase,
+			boolean computerPurchase,
 			String vendor,
 			String itemDesc,
 			String preOrderNotes,
@@ -203,7 +203,7 @@ public class Order extends AbstractTableEntry {
 		return this.urgent;
 	}
 	
-	public String getComputerPurchase(){
+	public boolean getComputerPurchase(){
 		return this.computerPurchase;
 	}
 	
@@ -283,7 +283,7 @@ public class Order extends AbstractTableEntry {
 		this.urgent = urgent;
 	}
 	
-	public void setComputerPurchase(String computerPurchase){
+	public void setComputerPurchase(boolean computerPurchase){
 		this.computerPurchase = computerPurchase;
 	}
 	
@@ -339,7 +339,7 @@ public class Order extends AbstractTableEntry {
 		setReceiveDate(set.getDate(COLUMN_NAMES[5]));
 		setAccountNumber(set.getString(COLUMN_NAMES[6]));
 		setUrgent(set.getBoolean(COLUMN_NAMES[7]));
-		setComputerPurchase(set.getString(COLUMN_NAMES[8]));
+		setComputerPurchase(set.getBoolean(COLUMN_NAMES[8]));
 		setVendor(set.getString(COLUMN_NAMES[9]));
 		setItemDesc(set.getString(COLUMN_NAMES[10]));
 		setPreOrderNotes(set.getString(COLUMN_NAMES[11]));
@@ -366,7 +366,7 @@ public class Order extends AbstractTableEntry {
 				"\"" + receiveDate + "\", " +
 				"\"" + accountNumber + "\", " +
 				"" + (urgent ? 1 : 0)  + ", " +	//SQL needs a value of 0 or 1 for booleans
-				"\"" + computerPurchase + "\", " +
+				"" + (computerPurchase ? 1 : 0) + ", " +
 				"\"" + vendor + "\", " +
 				"\"" + itemDesc + "\", " +
 				"\"" + preOrderNotes + "\", " +

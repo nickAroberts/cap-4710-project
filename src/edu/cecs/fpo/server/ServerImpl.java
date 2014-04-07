@@ -1,7 +1,9 @@
 package edu.cecs.fpo.server;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.sql.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
@@ -18,6 +20,7 @@ import javax.mail.internet.MimeMessage;
 import edu.cecs.fpo.common.LoggerManager;
 import edu.cecs.fpo.database.management.AbstractDatabaseManager;
 import edu.cecs.fpo.database.tables.AbstractTableEntry;
+import edu.cecs.fpo.database.tables.Order;
 import edu.cecs.fpo.database.tables.User;
 
 /**
@@ -38,6 +41,9 @@ public class ServerImpl {
 	/** Properties used by the messenger to send emails */
 	private static String SENDER_EMAIL_ADDRESS;
 	private static String SENDER_EMAIL_PASSWORD;
+	private static String ACCOUNTANT_EMAIL_ADDRESS;
+	private static String COMPUTER_PURCHASER_EMAIL_ADDRESS;
+	private static String PURCHASER_EMAIL_ADDRESS;
 	private static Properties EMAIL_SESSION_PROPERTIES;
 	
 	static {	
@@ -52,11 +58,17 @@ public class ServerImpl {
 			input = new FileInputStream(MESSENGER_CONFIG_FILE_NAME);			
 			prop.load(input);
 					
-			//get the messanger's email address, email password, and email propeties from the server configuration settings
+			//get the messenger's email propeties from the messenger configuration settings
 			SENDER_EMAIL_ADDRESS = prop.getProperty("senderEmailAddress");
 			SENDER_EMAIL_PASSWORD = prop.getProperty("senderEmailPassword");
+			ACCOUNTANT_EMAIL_ADDRESS = prop.getProperty("accountantEmailAddress");
+			COMPUTER_PURCHASER_EMAIL_ADDRESS = prop.getProperty("computerPurchaserEmailAddress");
+			PURCHASER_EMAIL_ADDRESS = prop.getProperty("purchaserEmailAddress");
 			prop.remove("senderEmailAddress");
 			prop.remove("senderEmailPassword");
+			prop.remove("accountantEmailAddress");
+			prop.remove("computerPurchaserEmailAddress");
+			prop.remove("purchaserEmailAddress");
 			EMAIL_SESSION_PROPERTIES = prop;
 			
 		} catch(Exception e){
@@ -170,6 +182,61 @@ public class ServerImpl {
 		}
 	}
 	
+	public static void createAndVerifyPurchaseOrder(String requestorName, String requestorEmailAddress, String accountNumber, boolean isUrgent, boolean isComputer, String vendor, String description, float amount, File[] attachedFiles) throws Exception{
+		
+		String[] firstNameLastName = requestorName.split(" ");
+		
+		HashMap<String, Object> columnNamesToValues = new HashMap<String, Object>();
+		columnNamesToValues.put(User.FIRST_NAME, firstNameLastName[0]);
+		if(firstNameLastName.length > 1){
+			columnNamesToValues.put(User.LAST_NAME, firstNameLastName[1]);
+		}
+		columnNamesToValues.put(User.EMAIL_ADDRESS, requestorEmailAddress);
+		
+		List<AbstractTableEntry> userList = AbstractDatabaseManager.selectRowsByColumns(columnNamesToValues, User.class);
+		User requestorUser = null;
+		
+		if(userList == null){
+			
+			//if the list of users returned is null, an error occurred
+			throw new Exception("An error occurred while searching for requestor information in the database.");
+		}
+		
+		else if(!userList.isEmpty()
+				&& userList.get(0) instanceof User){
+			
+			//otherwise, if a user with the specified information is found, use that user as the requestor
+			requestorUser = (User) userList.get(0);
+		}
+		
+		if(requestorUser == null){
+			throw new Exception("The requestor's information did not match that of any user in the database.");
+		}
+				
+		Order purchaseOrder = new Order(0, requestorUser.getId(), new Date(new java.util.Date().getTime()), new Date(0), new Date(0), new Date(0), accountNumber, isUrgent, isComputer, vendor, description, "", "", requestorName, requestorEmailAddress, amount, "", "", "");
+		
+		String[] emailRecipients = {requestorEmailAddress};
+		
+		String fileNames = "";
+		for(File f : attachedFiles){
+			fileNames = fileNames + ", " + f.getName();
+		}
+		
+		sendEmail(
+			emailRecipients,
+			"Order Request Sent",
+			"Your order request has been sent and is awaiting approval. Your order information is listed below:\n\n"
+			+ "\tOrder ID: " + purchaseOrder.getOrderId() +"\n"
+			+ "\tRequestor Name: " + requestorName + "\n"
+			+ "\tRequestor Email Address: " + requestorEmailAddress + "\n"
+			+ "\tUrgent: " + (isUrgent ? "Yes" : "No") + "\n"
+			+ "\tComputer: " + (isComputer ? "Yes" : "No") + "\n"
+			+ "\tVendor: " + vendor + "\n"
+			+ "\tItem Description: " + description + "\n"
+			+ "\tTotal Purchase Amount: " + amount + "\n"
+			+ "\tAttachments : " + fileNames + "\n");
+	}
+	
 	/**
 	 * Main method - Used for testing
 	 * 
@@ -177,15 +244,18 @@ public class ServerImpl {
 	 */
 	public static void main(String[] args){
 		
-		//this is commented mainly because I don't want my inbox getting full of these.
+		User user = new User(0, "nickar", "testpass", "Nick", "Roberts", "nickar0b3rts@gmail.com", "Faculty");
 		
-		/*try {
-			String addressees[] = {"nickar0b3rts@gmail.com"};
-			sendEmail(addressees, "Testing Time", "Testing. 1... 2.... 3.");
+		AbstractDatabaseManager.insertRow(user);
+		
+		File[] attachment = {new File(".classpath")};
+		
+		try {
+			createAndVerifyPurchaseOrder("Nick Roberts", "nickar0b3rts@gmail.com", "6", true, false, "Best Buy", "Insert Description Here", (float) 10.00, attachment);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}*/
+		}
 	}
 
 }
