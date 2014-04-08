@@ -1,7 +1,7 @@
 
 fieldset
 {
-   width: 600px;
+   width: 500px;
    padding:60px;
    border:5px inset gold;
 	border-radius: 10px;   
@@ -24,4 +24,11 @@ label
    font-weight: bold;
    margin-left:auto;
 	margin-right:auto;
+}
+
+input[type=submit]{
+    width: 20em;  
+    height: 6em;
+    margin-left: auto;
+    margin-right: auto;
 }

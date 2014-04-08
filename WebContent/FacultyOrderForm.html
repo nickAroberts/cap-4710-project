@@ -34,18 +34,20 @@
 </div>
 		
 <div class='container'>
+	<br/>
+	<input type = "checkbox" id = "isUrgent" name = "isUrgent"/>	
 	<label for='isUrgent' >Check If Urgent: </label><br/>
-	<input type = "checkbox" id = "isUrgent" name = "isUrgent"/>	<br/>
 </div>
 
 <div class='container'>
-	<label for='isComputer' >Computer/Laptop? </label><br/>
-	<input type = "checkbox" id = "isComputer" name = "isComputer"/>	<br/>
+	<br/>
+	<input type = "checkbox" id = "isComputer" name = "isComputer"/>
+	<label for='isComputer' >Computer/Laptop </label><br/><br/>
 </div>
 
 <div class='container'>
 	<label for='vendor' >Vendor: *</label><br/>
-	<input type = "text" id = "vendor" name = "vendor" required/>	<br/>
+	<input type = "text" id = "vendor" name = "vendor" size = "30" required/>	<br/>
 </div>
 
 <div class='container'>
@@ -55,26 +57,27 @@
 </div>
 
 <div class='container'>
-	<label for='cost' >Total Purchase Amount: * $</label><br/>
-	<input type = "text" id = "cost" name = "cost" required/><br/>
+	<label for='cost' >Total Purchase Amount: * </label><br/>
+	$<input type = "text" id = "cost" name = "cost" required/><br/>
 </div>
 
 <div class='container'>
-	<label for='file' >Attach File: </label><br/>
+	<br/>
+	<label for='file' >Attach File(s): </label>
 	<input type="file" name="file[]" id="file" multiple /><br/>
 </div>
 
-<img id="captcha" src="/securimage/securimage_show.php" alt="CAPTCHA Image" />
-	
 <div class='container'>
-	<label for ='captcha'>Enter Input Text to Validate: </label><br/>
-	<input name='captcha' id = 'captcha' type="text"/>	<br/>
+	<br/>
+	<input type = "checkbox" id = "isHuman" name = "isHuman"/>
+	<label for='isHuman' >I am not a spambot. </label><br/>
 </div>
 	
 <!-- create an orderNum on submit to send with the data -->
 <input type = "hidden" id="orderNum" name="orderNum">	
 	
 <div class='container'>	
+	<br/>
 	<input type="submit" name="submit" value="Submit"/><br/>
 </div>
 		
@@ -90,14 +93,6 @@ function getTimeStamp()
 }
 </script>
 
-<script type='text/javascript'>
-// <![CDATA[
-
-    var here  = new writeNow();
-    
-    
-// ]]>
-</script>
 	
 </body>
 </html>
