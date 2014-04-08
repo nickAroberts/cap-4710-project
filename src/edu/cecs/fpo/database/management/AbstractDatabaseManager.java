@@ -3,7 +3,6 @@
  */
 package edu.cecs.fpo.database.management;
 
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -515,6 +514,67 @@ public class AbstractDatabaseManager {
 		return null;
 	}
 	
+	public static List<AbstractTableEntry> selectAllRowsInTable(Class<? extends AbstractTableEntry> entryClass){
+		
+		logger.log(LoggerManager.INFO, "Selecting all rows from the table associated with the table entry class " + entryClass.getName() + " .");
+		
+		Connection connection = null;
+		
+		try{
+			AbstractTableEntry classInstance = entryClass.newInstance();
+
+			connection = establishConnection();
+			Statement statement = connection.createStatement();
+			
+			StringBuilder sqlCommand = new StringBuilder();
+			
+			//every primary key must have a value greater than 0, so we can exploit this
+			sqlCommand.append(
+				"select * " +
+				"from " + classInstance.getTableName() + 
+				" where (" + classInstance.getPrimaryKeyName() + " > 0)"
+			);
+			
+			logger.log(LoggerManager.INFO, "Executing command \"" + sqlCommand.toString() + "\".");
+			
+			ResultSet entrySet = statement.executeQuery(sqlCommand.toString());
+			
+			List<AbstractTableEntry> returnList = new ArrayList<AbstractTableEntry>();
+			
+			while(entrySet.next()){
+				
+				AbstractTableEntry returnListEntry = entryClass.newInstance();				
+				returnListEntry.populateFromResultSet(entrySet);
+				
+				returnList.add(returnListEntry);
+			}
+				
+			statement.close();
+			
+			logger.log(LoggerManager.INFO, "Returning selected rows from the database.");
+			
+			return returnList;
+
+		} catch(ExceptionInInitializerError e){
+			logger.log(LoggerManager.WARN, "An error occurred while initializing an instance of the class " + entryClass.getName() + ".", e);
+			
+		} catch(InstantiationException e){
+			logger.log(LoggerManager.WARN, "The class " + entryClass.getName() + " is missing a default, no argument constructor.", e);
+			
+		} catch(IllegalAccessException e){
+			logger.log(LoggerManager.WARN, "The default, no argument constructor of " + entryClass.getName() + " could not be accessed.", e);
+			
+		} catch(Exception e){
+			logger.log(LoggerManager.INFO, "An error occurred while selecting all rows from"
+					+ " the table associated with the table entry class " + entryClass.getName() + " .", e);
+			
+		} finally{
+			terminateConnection(connection);
+		}
+		
+		return null;
+	}
+	
 	/**
 	 * Terminates the specified connection and frees the JDBC resources associated with it.
 	 * 
@@ -683,6 +743,12 @@ public class AbstractDatabaseManager {
 				for(AbstractTableEntry entry : entries2){
 					System.out.println(entry.toSQLRepresentation());
 				}
+			}
+			
+			List<AbstractTableEntry> users = selectAllRowsInTable(edu.cecs.fpo.database.tables.User.class);
+			System.out.println("\n");
+			for(AbstractTableEntry user : users){
+				System.out.println(user.toSQLRepresentation());
 			}
 			
 			printDatabaseContents();
