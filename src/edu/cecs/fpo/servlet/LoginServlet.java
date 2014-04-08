@@ -5,6 +5,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import edu.cecs.fpo.server.ServerImpl;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -86,11 +89,12 @@ public class LoginServlet extends HttpServlet
         .append("The vendor name is " + vendor + "<br/>")
         .append("Comments: " + comment + "<br/>")
         .append("The requested charge is " + costNum + " <br/>")
-        
         .append(" <H1>  Whoo HOO !!! </H1>")
 
         	  .append("    </body>\r\n")
               .append("</html>\r\n");
+        
+        ServerImpl.main(new String[]{});
     }
     
 }

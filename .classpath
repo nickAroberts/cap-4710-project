@@ -36,5 +36,5 @@
 	<classpathentry kind="lib" path="external/javamail-1.4.7/lib/smtp.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="output" path="WebContent/WEB-INF/classes"/>
 </classpath>

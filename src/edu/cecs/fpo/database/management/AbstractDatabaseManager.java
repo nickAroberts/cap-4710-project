@@ -62,7 +62,7 @@ public class AbstractDatabaseManager {
 		
 		try{			
 			//get the database configuration settings from the designated file
-			input = new FileInputStream(DATABASE_CONFIG_FILE_NAME);			
+			input = ClassLoader.getSystemResourceAsStream(DATABASE_CONFIG_FILE_NAME);			
 			prop.load(input);
 					
 			//get the host url, user name, and password from the server configuration settings

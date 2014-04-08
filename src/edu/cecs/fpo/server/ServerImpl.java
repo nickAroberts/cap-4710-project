@@ -55,7 +55,7 @@ public class ServerImpl {
 			logger.log(LoggerManager.INFO, "Getting messenger configuration settings from " + MESSENGER_CONFIG_FILE_NAME + ".");
 			
 			//get the messenger configuration settings from the designated file
-			input = new FileInputStream(MESSENGER_CONFIG_FILE_NAME);			
+			input = ClassLoader.getSystemResourceAsStream(MESSENGER_CONFIG_FILE_NAME);			
 			prop.load(input);
 					
 			//get the messenger's email propeties from the messenger configuration settings
@@ -244,11 +244,11 @@ public class ServerImpl {
 	 */
 	public static void main(String[] args){
 		
-		User user = new User(0, "nickar", "testpass", "Nick", "Roberts", "nickar0b3rts@gmail.com", "Faculty");
+		User user = new User(3, "nickar", "testpass", "Nick", "Roberts", "nickar0b3rts@gmail.com", "Faculty");
 		
 		AbstractDatabaseManager.insertRow(user);
 		
-		File[] attachment = {new File(".classpath")};
+		File[] attachment = {};
 		
 		try {
 			createAndVerifyPurchaseOrder("Nick Roberts", "nickar0b3rts@gmail.com", "6", true, false, "Best Buy", "Insert Description Here", (float) 10.00, attachment);
