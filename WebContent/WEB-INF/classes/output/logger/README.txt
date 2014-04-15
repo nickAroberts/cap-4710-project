@@ -1,1 +1,0 @@
-This folder stores logging information tracking exceptions and debugging statements dispersed througout the code.

@@ -14,7 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
-import edu.cecs.fpo.database.management.AbstractDatabaseManager;
+import edu.cecs.fpo.server.ServerImpl;
 
 /**
  * A tool used to manage logging resources.
@@ -48,7 +48,7 @@ public class LoggerManager{
 		
 		try{			
 			//get the logging configuration settings from the designated file
-			input = new FileInputStream(LOGGING_CONFIG_FILE_NAME);			
+			input = ServerImpl.class.getClassLoader().getResourceAsStream(LOGGING_CONFIG_FILE_NAME);		
 			prop.load(input);
 					
 			//get the package logging levels

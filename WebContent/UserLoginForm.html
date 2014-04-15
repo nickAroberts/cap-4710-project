@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>Faculty Purchase Requests</title>
+	<link rel="stylesheet" type="text/css" href="css/orderform.css" />
+   <script type='text/javascript' src='Scripts/Testing.js'></script>   
+</head>
+
+<body>
+
+<!-- Form Code Start -->
+<form name = "PurchaseRequest" Method = "Post" Action = "UserLoginServlet" 
+		onClick = "getTimeStamp()" onSubmit = "return testValidEntry()" > 
+<fieldset>
+
+<legend>Sign in:</legend>
+
+
+	
+<div class='container'>
+    <label for='name' >Username: *</label><br/>
+    <input type='text' name='username' id='username' size ="50" required autofocus/> <br/>
+</div>		
+
+<div class='container'>
+	<label for='email' >Password: *</label><br/>
+	<input type="text" name="password" id = 'password' size = "40" required/>	<br/>
+</div>	
+	
+<div class='container'>	
+	<input type="submit" name="submit" value="Submit"/><br/>
+</div>
+		
+</fieldset>	
+</form>
+	
+</body>
+</html>

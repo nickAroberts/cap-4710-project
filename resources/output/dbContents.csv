@@ -1,0 +1,12 @@
+orders:
+,orderID,userID,orderRequestDate,purchaseDate,approvalDate,receiveDate,accountNumber,urgent,computerPurchase,vendor,itemDesc,preOrderNotes,attachment,requestor,requestorEmail,amount,accountCode,PONumber
+Row: 1,1,1,1969-12-31,1969-12-31,1969-12-31,1969-12-31,A,0,1,C,D,E,F,G,H,4,I,J
+
+users:
+,userID,username,pass,firstName,lastName,emailAddress
+Row: 1,1,A,B,C,D,E
+Row: 2,3,nickar,testpass,Nick,Roberts,nickar0b3rts@gmail.com
+Row: 3,10,purchaser,password,Nick,Roberts,nickar0b3rts@gmail.com
+Row: 4,11,accountant,acpassword,Nick,Roberts,nickar0b3rts@gmail.com
+Row: 5,12,admin,adpassword,Nick,Roberts,nickar0b3rts@gmail.com
+

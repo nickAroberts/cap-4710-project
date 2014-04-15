@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>Faculty Purchase Requests</title>
+	<link rel="stylesheet" type="text/css" href="css/orderform.css" />
+   <script type='text/javascript' src='Scripts/Testing.js'></script>   
+</head>
+
+<body>
+
+<!-- Form Code Start -->
+<form name = "PurchaseRequest" Method = "Post" Action = "LoginServlet" 
+		onClick = "getTimeStamp()" onSubmit = "return testValidEntry()" > 
+<fieldset>
+
+<legend>Faculty Purchase Request</legend>
+
+
+	
+<div class='container'>
+    <label for='name' >Requestor Name: *</label><br/>
+    <input type='text' name='name' id='name' size ="50" required autofocus/> <br/>
+</div>		
+
+<div class='container'>
+	<label for='email' >Requestor E-mail: *</label><br/>
+	<input type="text" name="email" id = 'email' size = "40" required/>	<br/>
+</div>
+
+<div class='container'>
+	<label for='accountNum' >Account: *</label><br/>
+	<input type="text" name="accountNum" id = 'accountNum' size = "30" required/>	<br/>
+</div>
+		
+<div class='container'>
+	<br/>
+	<input type = "checkbox" id = "isUrgent" name = "isUrgent"/>	
+	<label for='isUrgent' >Check If Urgent: </label><br/>
+</div>
+
+<div class='container'>
+	<br/>
+	<input type = "checkbox" id = "isComputer" name = "isComputer"/>
+	<label for='isComputer' >Computer/Laptop </label><br/><br/>
+</div>
+
+<div class='container'>
+	<label for='vendor' >Vendor: *</label><br/>
+	<input type = "text" id = "vendor" name = "vendor" size = "30" required/>	<br/>
+</div>
+
+<div class='container'>
+	<label for='comment' >Item Description *</label><br/>
+	<textarea name="comment" id = "comment" rows="5" cols="40" 
+			placeholder = "Include Quantities" required></textarea><br/>
+</div>
+
+<div class='container'>
+	<label for='cost' >Total Purchase Amount: * </label><br/>
+	$<input type = "text" id = "cost" name = "cost" required/><br/>
+</div>
+
+<div class='container'>
+	<br/>
+	<label for='file' >Attach File(s): </label>
+	<input type="file" name="file[]" id="file" multiple /><br/>
+</div>
+
+<div class='container'>
+	<br/>
+	<input type = "checkbox" id = "isHuman" name = "isHuman"/>
+	<label for='isHuman' >I am not a spambot. </label><br/>
+</div>
+	
+<!-- create an orderNum on submit to send with the data -->
+<input type = "hidden" id="orderNum" name="orderNum">	
+	
+<div class='container'>	
+	<br/>
+	<input type="submit" name="submit" value="Submit"/><br/>
+</div>
+		
+</fieldset>	
+</form>
+
+<!--  Returns the UNIX timestamp when the user clicks submit -->
+<script>
+function getTimeStamp()
+{
+	document.getElementById('orderNum').value = new Date().getTime();
+	 
+}
+</script>
+
+	
+</body>
+</html>

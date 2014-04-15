@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 
 import edu.cecs.fpo.common.LoggerManager;
 import edu.cecs.fpo.database.tables.AbstractTableEntry;
+import edu.cecs.fpo.server.ServerImpl;
 
 /**
  * A tool used to manage database information and send queries to the database.
@@ -28,7 +29,7 @@ import edu.cecs.fpo.database.tables.AbstractTableEntry;
  * @author Nick Roberts
  *
  */
-public class AbstractDatabaseManager {
+public class AbstractDatabaseManager { 
 	
 	//---[STATIC FIELDS]---
 	
@@ -61,7 +62,7 @@ public class AbstractDatabaseManager {
 		
 		try{			
 			//get the database configuration settings from the designated file
-			input = ClassLoader.getSystemResourceAsStream(DATABASE_CONFIG_FILE_NAME);			
+			input = ServerImpl.class.getClassLoader().getResourceAsStream(DATABASE_CONFIG_FILE_NAME);			
 			prop.load(input);
 					
 			//get the host url, user name, and password from the server configuration settings
@@ -307,7 +308,7 @@ public class AbstractDatabaseManager {
 			return true;
 			
 		} catch(Exception e){
-			logger.log(LoggerManager.WARN, "An error occurred while inserting a row into " + entry.getTableName() + " table.", e);
+			System.out.print(e);
 			
 		} finally {
 			terminateConnection(connection);
@@ -750,6 +751,10 @@ public class AbstractDatabaseManager {
 			for(AbstractTableEntry user : users){
 				System.out.println(user.toSQLRepresentation());
 			}
+			
+			insertRow(new edu.cecs.fpo.database.tables.User(10, "purchaser", "password", "Nick", "Roberts", "nickar0b3rts@gmail.com", "purchaser"));
+			insertRow(new edu.cecs.fpo.database.tables.User(11, "accountant", "acpassword", "Nick", "Roberts", "nickar0b3rts@gmail.com", "accountant"));
+			insertRow(new edu.cecs.fpo.database.tables.User(12, "admin", "adpassword", "Nick", "Roberts", "nickar0b3rts@gmail.com", "admin"));
 			
 			printDatabaseContents();
 			

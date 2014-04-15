@@ -5,6 +5,7 @@
         <wb-resource deploy-path="/" source-path="/forms"/>
         <wb-resource deploy-path="/config" source-path="/config"/>
         <wb-resource deploy-path="/output" source-path="/output"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/resources"/>
         <property name="context-root" value="FacultyPurchaseOrders"/>
         <property name="java-output-path" value="/FacultyPurchaseOrders/bin"/>
     </wb-module>

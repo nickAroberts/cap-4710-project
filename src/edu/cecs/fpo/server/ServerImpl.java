@@ -55,7 +55,7 @@ public class ServerImpl {
 			logger.log(LoggerManager.INFO, "Getting messenger configuration settings from " + MESSENGER_CONFIG_FILE_NAME + ".");
 			
 			//get the messenger configuration settings from the designated file
-			input = ClassLoader.getSystemResourceAsStream(MESSENGER_CONFIG_FILE_NAME);			
+			input = ServerImpl.class.getClassLoader().getResourceAsStream(MESSENGER_CONFIG_FILE_NAME);			
 			prop.load(input);
 					
 			//get the messenger's email propeties from the messenger configuration settings
