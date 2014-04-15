@@ -64,8 +64,10 @@
 <div class='container'>
 	<br/>
 	<label for='file' >Attach File(s): </label>
-	<input type="file" name="file[]" id="file" multiple /><br/>
+	<input type="file" name="file" id="file" onchange = getFileName(); /><br/>
 </div>
+
+<input type = "hidden" id="filename" name="filename" >
 
 <div class='container'>
 	<br/>
@@ -93,6 +95,12 @@ function getTimeStamp()
 }
 </script>
 
+<script>
+function getFileName()
+{
+document.getElementById("filename").value = document.getElementById("file").value;
+}
+</script>
 	
 </body>
 </html>

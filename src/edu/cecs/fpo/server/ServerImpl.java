@@ -182,7 +182,7 @@ public class ServerImpl {
 		}
 	}
 	
-	public static void createAndVerifyPurchaseOrder(String requestorName, String requestorEmailAddress, String accountNumber, boolean isUrgent, boolean isComputer, String vendor, String description, float amount, File[] attachedFiles) throws Exception{
+	public static void createAndVerifyPurchaseOrder(String requestorName, String requestorEmailAddress, String accountNumber, boolean isUrgent, boolean isComputer, String vendor, String description, float amount, String attachedFiles) throws Exception{
 		
 		String[] firstNameLastName = requestorName.split(" ");
 		
@@ -217,10 +217,7 @@ public class ServerImpl {
 		
 		String[] emailRecipients = {requestorEmailAddress};
 		
-		String fileNames = "";
-		for(File f : attachedFiles){
-			fileNames = fileNames + ", " + f.getName();
-		}
+		String fileNames = attachedFiles;
 		
 		sendEmail(
 			emailRecipients,
@@ -248,10 +245,8 @@ public class ServerImpl {
 		
 		AbstractDatabaseManager.insertRow(user);
 		
-		File[] attachment = {};
-		
 		try {
-			createAndVerifyPurchaseOrder("Nick Roberts", "nickar0b3rts@gmail.com", "6", true, false, "Best Buy", "Insert Description Here", (float) 10.00, attachment);
+			createAndVerifyPurchaseOrder("Nick Roberts", "nickar0b3rts@gmail.com", "6", true, false, "Best Buy", "Insert Description Here", (float) 10.00, "test.txt");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

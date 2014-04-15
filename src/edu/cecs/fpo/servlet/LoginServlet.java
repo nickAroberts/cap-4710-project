@@ -19,38 +19,7 @@ import java.io.PrintWriter;
 )
 public class LoginServlet extends HttpServlet
 {
-	/*
-	@Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException
-    {
-    	// It sets the content type of the response to text/html and the chatacter encoding to UTF-8
-        response.setContentType("text/html");
-        response.setCharacterEncoding("UTF-8");
-
-        PrintWriter writer = response.getWriter();
-        writer.append("<!DOCTYPE html>\r\n")
-              .append("<html>\r\n")
-              .append("    <head>\r\n")
-              .append("        <title>Faculty Purchase Order</title>\r\n")
-              .append("    </head>\r\n");
-              
-              .append("    <body>\r\n")
-              .append("        <form action=\"checkboxes\" method=\"POST\">\r\n")
-              .append("Please select what would like to do:<br/>\r\n")
-              .append("<input type=\"checkbox\" name=\"order\" value=\"Call Nick\"/>")
-              .append(" Call Nick<br/>\r\n")
-              .append("<input type=\"checkbox\" name=\"order\" value=\"Call Jeremy\"/>")
-              .append(" Call Jermy<br/>\r\n")
-              .append("<input type=\"checkbox\" name=\"order\" value=\"Call Amanda\"/>")
-              .append(" Call Amanda<br/>\r\n")
-              .append("<input type=\"submit\" value=\"Submit\"/>\r\n")
-              .append("        </form>")
-              .append("    </body>\r\n")
-              .append("</html>\r\n");
-              
-    }
-    */
+	
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -67,34 +36,47 @@ public class LoginServlet extends HttpServlet
     	String vendor = request.getParameter("vendor");
     	String comment = request.getParameter("comment");
     	float costNum = Float.parseFloat( request.getParameter("cost") );
+    	String filename = request.getParameter("filename");
     	
     	
         response.setContentType("text/html");
         response.setCharacterEncoding("UTF-8");
 
         PrintWriter writer = response.getWriter();
+        
+        // create confirmation order page, and retrieve values from form
         writer.append("<!DOCTYPE html>\r\n")
               .append("<html>\r\n")
               .append("    <head>\r\n")
               .append("        <title>Faculty Purchase Order</title>\r\n")
               .append("    </head>\r\n")
               .append("    <body>\r\n")
+              .append(" <H3>  The following order has been created, and an email confirmation will be delivered shortly:<br/> </H3>")
+              
+              .append("Confirmation: ")
               .append("	 This is order number " + orderNum + " <br/>")
         		
-        .append(" The name submitted is " + name + " <br/>")
-        .append(" The email submitted is " + email + " <br/>")
-        .append("The accounNum is " + accountNum + " <br/>")
-        .append("Is this urgent? " + isUrgent + " <br/>")
-        .append(" Is this a computer " + isComputer + " <br/>")
-        .append("The vendor name is " + vendor + "<br/>")
-        .append("Comments: " + comment + "<br/>")
-        .append("The requested charge is " + costNum + " <br/>")
-        .append(" <H1>  Whoo HOO !!! </H1>")
-
+              .append(" The name submitted is " + name + " <br/>")
+              .append(" The email submitted is " + email + " <br/>")
+              .append("The accounNum is " + accountNum + " <br/>")
+              .append("Is this urgent? " + isUrgent + " <br/>")
+              .append(" Is this a computer " + isComputer + " <br/>")
+              .append("The vendor name is " + vendor + "<br/>")
+              .append("Comments: " + comment + "<br/>")
+              .append("The requested charge is " + costNum + " <br/>")
+              .append(" submitting file: " + filename + " <br/>")
+              .append("<br/>  <br/>")
+              .append(" <a href = 'FacultyOrderForm.html'>Go back to order form</a>")
         	  .append("    </body>\r\n")
               .append("</html>\r\n");
         
-        ServerImpl.main(new String[]{});
+        // call ServerImpl with form values to load into database
+        try {
+			ServerImpl.createAndVerifyPurchaseOrder(name, email, accountNum, isUrgent, isComputer, vendor, comment, costNum, "file");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
     
 }
